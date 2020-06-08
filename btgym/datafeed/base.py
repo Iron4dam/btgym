@@ -349,15 +349,17 @@ class BTgymBaseData:
 
         # Maximum data time gap allowed within sample as pydatetimedelta obj:
         self.max_time_gap = datetime.timedelta(**self.time_gap)
-
+        
         # Max. gap number of records:
-        self.max_gap_num_records = int(self.max_time_gap.total_seconds() / (60 * self.timeframe))
+#        self.max_gap_num_records = int(self.max_time_gap.total_seconds() / (60 * self.timeframe))
+        self.max_gap_num_records = int(self.max_time_gap.days)
 
         # ... maximum episode time duration:
         self.max_sample_len_delta = datetime.timedelta(**self.sample_duration)
 
         # Maximum possible number of data records (rows) within episode:
-        self.sample_num_records = int(self.max_sample_len_delta.total_seconds() / (60 * self.timeframe))
+#        self.sample_num_records = int(self.max_sample_len_delta.total_seconds() / (60 * self.timeframe))
+        self.sample_num_records = int(self.max_sample_len_delta.days)
 
         self.backshift_num_records = round(self._test_period_backshift_delta.total_seconds() / (60 * self.timeframe))
 
@@ -380,6 +382,7 @@ class BTgymBaseData:
                 self.train_interval = [0, break_point]
                 self.test_interval = [break_point - self.backshift_num_records, self.data.shape[0]]
             else:
+                print('train_num_records', self.data.shape[0])
                 self.test_num_records = 0
                 self.train_num_records = self.data.shape[0]
                 break_point = self.train_num_records
@@ -510,7 +513,8 @@ class BTgymBaseData:
              dict of type: {data_line_name: bt.datafeed instance}.
         """
         def bt_timeframe(minutes):
-            timeframe = TimeFrame.Minutes
+#            timeframe = TimeFrame.Minutes
+            timeframe = TimeFrame.Days
             if minutes / 1440 == 1:
                 timeframe = TimeFrame.Days
             return timeframe
